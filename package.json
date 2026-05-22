@@ -1,0 +1,14 @@
+{
+  "name": "streaming-hub",
+  "version": "1.0.0",
+  "description": "Multi-platform streaming catalog fetcher",
+  "main": "scripts/hub-fetch.js",
+  "scripts": {
+    "fetch": "node scripts/hub-fetch.js",
+    "tmdb": "node scripts/hub-tmdb.js",
+    "imdb": "node scripts/hub-imdb.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0"
+  }
+}
