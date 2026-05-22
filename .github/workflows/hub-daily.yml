@@ -28,3 +28,11 @@ jobs:
           SUPABASE_KEY: ${{ secrets.HUB_SUPABASE_KEY }}
         run: node scripts/hub-imdb.js
         working-directory: streaming-hub
+
+      - name: Run hub-popular.js
+        env:
+          HUB_SUPABASE_URL: ${{ secrets.HUB_SUPABASE_URL }}
+          HUB_SUPABASE_KEY: ${{ secrets.HUB_SUPABASE_KEY }}
+          HUB_RAPIDAPI_KEY: ${{ secrets.HUB_RAPIDAPI_KEY }}
+        run: node scripts/hub-popular.js
+        working-directory: streaming-hub
