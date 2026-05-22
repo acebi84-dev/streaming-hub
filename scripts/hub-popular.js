@@ -6,7 +6,12 @@ const RAPIDAPI_KEY = process.env.RAPIDAPI_KEY || process.env.HUB_RAPIDAPI_KEY;
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const PLATFORMS = ['netflix', 'prime', 'disney', 'hbo'];
+const PLATFORMS = [
+  { slug: 'amazon', rapidId: 'prime' },
+  { slug: 'netflix', rapidId: 'netflix' },
+  { slug: 'disney', rapidId: 'disney' },
+  { slug: 'hbo', rapidId: 'hbo' },
+];
 
 async function fetchPopular(platform) {
   const params = new URLSearchParams({
@@ -45,16 +50,16 @@ async function run() {
   }
 
   for (const platform of PLATFORMS) {
-    console.log(`Fetching ${platform}...`);
-    const shows = await fetchPopular(platform);
+    console.log(`Fetching ${platform.slug}...`);
+    const shows = await fetchPopular(platform.rapidId);
     console.log(`  Got ${shows.length} shows`);
 
     const rows = shows.slice(0, 20).map((show, index) => {
       const trOptions = show.streamingOptions?.tr || [];
-      const platformOption = trOptions.find(o => o.service.id === platform);
+      const platformOption = trOptions.find(o => o.service.id === platform.rapidId);
 
       return {
-        platform,
+        platform: platform.slug,
         rank: index + 1,
         show_id: show.id,
         imdb_id: show.imdbId,
@@ -74,9 +79,9 @@ async function run() {
     if (rows.length > 0) {
       const { error } = await supabase.from('hub_popular').insert(rows);
       if (error) {
-        console.error(`Insert error for ${platform}:`, error);
+        console.error(`Insert error for ${platform.slug}:`, error);
       } else {
-        console.log(`  Saved ${rows.length} rows for ${platform}`);
+        console.log(`  Saved ${rows.length} rows for ${platform.slug}`);
       }
     }
 
