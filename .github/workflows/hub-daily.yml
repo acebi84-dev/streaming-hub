@@ -20,14 +20,12 @@ jobs:
 
       - name: Install dependencies
         run: npm install
-        working-directory: streaming-hub
 
       - name: Run hub-imdb.js
         env:
           SUPABASE_URL: ${{ secrets.HUB_SUPABASE_URL }}
           SUPABASE_KEY: ${{ secrets.HUB_SUPABASE_KEY }}
         run: node scripts/hub-imdb.js
-        working-directory: streaming-hub
 
       - name: Run hub-popular.js
         env:
@@ -35,4 +33,3 @@ jobs:
           HUB_SUPABASE_KEY: ${{ secrets.HUB_SUPABASE_KEY }}
           HUB_RAPIDAPI_KEY: ${{ secrets.HUB_RAPIDAPI_KEY }}
         run: node scripts/hub-popular.js
-        working-directory: streaming-hub
