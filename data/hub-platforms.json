@@ -1,0 +1,26 @@
+[
+  {
+    "slug": "netflix",
+    "name": "Netflix",
+    "color": "#E50914",
+    "rapidapi_id": "netflix"
+  },
+  {
+    "slug": "amazon",
+    "name": "Amazon Prime",
+    "color": "#00A8E1",
+    "rapidapi_id": "prime"
+  },
+  {
+    "slug": "disney",
+    "name": "Disney+",
+    "color": "#113CCF",
+    "rapidapi_id": "disney"
+  },
+  {
+    "slug": "hbo",
+    "name": "HBO Max",
+    "color": "#5822B4",
+    "rapidapi_id": "hbo"
+  }
+]
