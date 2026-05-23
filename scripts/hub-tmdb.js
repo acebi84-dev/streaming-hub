@@ -95,7 +95,7 @@ async function run() {
     const { data: contents, error } = await supabase
       .from('hub_contents')
       .select('id, imdb_id, type')
-      .or('cast_list.is.null,synopsis_tr.is.null,trailer_url.is.null')
+      .or('cast_list.is.null,synopsis_tr.is.null,trailer_url.is.null,year.is.null')
       .not('imdb_id', 'is', null)
       .range(page * pageSize, (page + 1) * pageSize - 1);
 

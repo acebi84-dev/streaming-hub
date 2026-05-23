@@ -4,6 +4,8 @@ on:
   schedule:
     - cron: '0 2 1 * *'
   workflow_dispatch:
+  push:
+    branches: [main]
 
 jobs:
   fetch:
@@ -16,11 +18,10 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
 
       - name: Install dependencies
         run: npm install
-        working-directory: streaming-hub
 
       - name: Run hub-fetch.js
         env:
@@ -28,7 +29,6 @@ jobs:
           SUPABASE_KEY: ${{ secrets.HUB_SUPABASE_KEY }}
           RAPIDAPI_KEY: ${{ secrets.HUB_RAPIDAPI_KEY }}
         run: node scripts/hub-fetch.js
-        working-directory: streaming-hub
 
       - name: Run hub-tmdb.js
         env:
@@ -36,4 +36,3 @@ jobs:
           SUPABASE_KEY: ${{ secrets.HUB_SUPABASE_KEY }}
           TMDB_KEY: ${{ secrets.HUB_TMDB_KEY }}
         run: node scripts/hub-tmdb.js
-        working-directory: streaming-hub
