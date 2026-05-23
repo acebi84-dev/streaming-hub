@@ -65,7 +65,6 @@ function mapShow(show) {
     type: show.showType === 'movie' ? 'movie' : 'series',
     year: show.releaseYear || null,
     imdb_id: show.imdbId || null,
-    imdb_score: show.rating ? parseFloat((show.rating / 10).toFixed(1)) : null,
     original_title: show.originalTitle || show.title || null,
     original_language: show.originalLanguage || null,
     poster_url: show.imageSet?.verticalPoster?.w480 || show.imageSet?.horizontalPoster?.w480 || null,
@@ -123,7 +122,7 @@ async function processBatch(items, platformSlug, platformRapidId) {
     if (!contentId) continue;
 
     const platformUrl = getStreamingUrl(show, platformRapidId);
-    await upsertAvailability(contentId, platformSlug, platformUrl);
+    if (platformUrl) await upsertAvailability(contentId, platformSlug, platformUrl);
   }
 }
 
@@ -140,6 +139,13 @@ async function run() {
     try {
       const items = await fetchPlatformCatalog(platform.rapidapi_id);
       console.log(`[${platform.slug}] toplam ${items.length} içerik bulundu`);
+      // Eski availability kayıtlarını sil (delist olanlar için)
+      const { error: deleteError } = await supabase
+        .from('hub_availability')
+        .delete()
+        .eq('platform_slug', platform.slug);
+      if (deleteError) console.error(`Delete error for ${platform.slug}:`, deleteError.message);
+      else console.log(`[${platform.slug}] eski availability silindi`);
       await processBatch(items, platform.slug, platform.rapidapi_id);
       console.log(`[${platform.slug}] tamamlandı`);
     } catch (err) {
