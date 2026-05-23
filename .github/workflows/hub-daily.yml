@@ -4,8 +4,6 @@ on:
   schedule:
     - cron: '0 0 * * *'
   workflow_dispatch:
-  push:
-    branches: [main]
 
 jobs:
   update:
@@ -31,7 +29,7 @@ jobs:
 
       - name: Run hub-popular.js
         env:
-          HUB_SUPABASE_URL: ${{ secrets.HUB_SUPABASE_URL }}
-          HUB_SUPABASE_KEY: ${{ secrets.HUB_SUPABASE_KEY }}
-          HUB_RAPIDAPI_KEY: ${{ secrets.HUB_RAPIDAPI_KEY }}
+          SUPABASE_URL: ${{ secrets.HUB_SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.HUB_SUPABASE_KEY }}
+          RAPIDAPI_KEY: ${{ secrets.HUB_RAPIDAPI_KEY }}
         run: node scripts/hub-popular.js

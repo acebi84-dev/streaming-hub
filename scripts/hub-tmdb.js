@@ -95,7 +95,7 @@ async function run() {
     const { data: contents, error } = await supabase
       .from('hub_contents')
       .select('id, imdb_id, type')
-      .or('cast_list.is.null,synopsis_tr.is.null,trailer_url.is.null,year.is.null')
+      .or('cast_list.is.null,synopsis_tr.is.null,synopsis.is.null,trailer_url.is.null,year.is.null,original_language.is.null,title_tr.is.null,director.is.null,runtime.is.null,tagline.is.null')
       .not('imdb_id', 'is', null)
       .range(page * pageSize, (page + 1) * pageSize - 1);
 
@@ -111,35 +111,44 @@ async function run() {
 
     console.log(`Sayfa ${page + 1}: ${contents.length} içerik işleniyor...`);
 
-    for (const content of contents) {
-      try {
-        const enriched = await enrichContent(content);
-        if (!enriched) {
-          console.log(`  Atlandı: ${content.imdb_id}`);
-          // Mark as processed to avoid infinite loop - set a placeholder
-          await supabase
-            .from('hub_contents')
-            .update({ synopsis_tr: '', cast_list: '' })
-            .eq('id', content.id)
-            .is('synopsis_tr', null);
-          continue;
-        }
+    // Enrich all contents in parallel batches of 5
+    const PARALLEL = 5;
+    const updates = [];
+    const skipped = [];
 
-        const { error: updateError } = await supabase
-          .from('hub_contents')
-          .update(enriched)
-          .eq('id', content.id);
-
-        if (updateError) {
-          console.error(`  Güncelleme hatası ${content.imdb_id}:`, updateError.message);
-        } else {
-          console.log(`  OK: ${content.imdb_id}`);
+    for (let i = 0; i < contents.length; i += PARALLEL) {
+      const batch = contents.slice(i, i + PARALLEL);
+      const results = await Promise.all(batch.map(async (content) => {
+        try {
+          const enriched = await enrichContent(content);
+          if (!enriched) return { skip: content.id };
+          return { id: content.id, ...enriched };
+        } catch (err) {
+          console.error(`  Hata ${content.imdb_id}:`, err.message);
+          return null;
         }
-      } catch (err) {
-        console.error(`  Hata ${content.imdb_id}:`, err.message);
+      }));
+
+      for (const result of results) {
+        if (!result) continue;
+        if (result.skip) { skipped.push(result.skip); continue; }
+        updates.push(result);
       }
-
       await sleep(300);
+    }
+
+    // Batch update enriched contents
+    if (updates.length > 0) {
+      const { error: upsertError } = await supabase
+        .from('hub_contents')
+        .upsert(updates, { onConflict: 'id' });
+      if (upsertError) console.error('Batch update error:', upsertError.message);
+      else console.log(`  ${updates.length} kayıt güncellendi`);
+    }
+
+    // Mark skipped as processed
+    for (const id of skipped) {
+      await supabase.from('hub_contents').update({ synopsis_tr: '', cast_list: '' }).eq('id', id).is('synopsis_tr', null);
     }
 
     page++;
