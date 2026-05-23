@@ -88,7 +88,14 @@ async function processBatch(items, platform) {
 
   // Prepare all content data
   const validItems = items.filter(show => show.imdbId);
-  const showsData = validItems.map(mapShow);
+  // Deduplicate by imdb_id
+  const seen = new Set();
+  const uniqueItems = validItems.filter(show => {
+    if (seen.has(show.imdbId)) return false;
+    seen.add(show.imdbId);
+    return true;
+  });
+  const showsData = uniqueItems.map(mapShow);
 
   // Upsert contents in batches
   const contentIdMap = {};
@@ -104,7 +111,7 @@ async function processBatch(items, platform) {
   }
 
   // Prepare availability data
-  const availabilities = validItems
+  const availabilities = uniqueItems
     .map(show => {
       const contentId = contentIdMap[show.imdbId];
       if (!contentId) return null;

@@ -66,6 +66,10 @@ async function enrichContent(content) {
   const original_language = detailEn.original_language || null;
   const year = detailEn.release_date?.slice(0,4) ? parseInt(detailEn.release_date.slice(0,4)) : (detailEn.first_air_date?.slice(0,4) ? parseInt(detailEn.first_air_date.slice(0,4)) : null);
 
+  // Similar content TMDB IDs
+  const similarRes = await tmdbFetch(`/${type}/${item.id}/similar?page=1`);
+  const similarIds = (similarRes?.results || []).slice(0, 15).map(s => s.id).filter(Boolean);
+
   return {
     title_tr: titleTr,
     synopsis_tr: synopsisTr,
@@ -77,6 +81,7 @@ async function enrichContent(content) {
     runtime,
     original_language,
     year,
+    similar_tmdb_ids: similarIds.length > 0 ? similarIds : null,
   };
 }
 
@@ -95,7 +100,7 @@ async function run() {
     const { data: contents, error } = await supabase
       .from('hub_contents')
       .select('id, imdb_id, type')
-      .or('cast_list.is.null,synopsis_tr.is.null,synopsis.is.null,trailer_url.is.null,year.is.null,original_language.is.null,title_tr.is.null,director.is.null,runtime.is.null,tagline.is.null')
+      .or('cast_list.is.null,synopsis_tr.is.null,synopsis.is.null,trailer_url.is.null,year.is.null,original_language.is.null,title_tr.is.null,director.is.null,runtime.is.null,tagline.is.null,similar_tmdb_ids.is.null')
       .not('imdb_id', 'is', null)
       .range(page * pageSize, (page + 1) * pageSize - 1);
 
