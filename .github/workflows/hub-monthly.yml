@@ -1,5 +1,4 @@
 name: Hub Monthly Fetch
-
 on:
   schedule:
     - cron: '0 2 1 * *'
@@ -7,29 +6,35 @@ on:
 jobs:
   fetch:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-
       - name: Install dependencies
         run: npm install
-
       - name: Run hub-fetch.js
         env:
           SUPABASE_URL: ${{ secrets.HUB_SUPABASE_URL }}
           SUPABASE_KEY: ${{ secrets.HUB_SUPABASE_KEY }}
           RAPIDAPI_KEY: ${{ secrets.HUB_RAPIDAPI_KEY }}
         run: node scripts/hub-fetch.js
-
       - name: Run hub-tmdb.js
         env:
           SUPABASE_URL: ${{ secrets.HUB_SUPABASE_URL }}
           SUPABASE_KEY: ${{ secrets.HUB_SUPABASE_KEY }}
           TMDB_KEY: ${{ secrets.HUB_TMDB_KEY }}
         run: node scripts/hub-tmdb.js
+      - name: Run hub-imdb.js
+        env:
+          SUPABASE_URL: ${{ secrets.HUB_SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.HUB_SUPABASE_KEY }}
+        run: node scripts/hub-imdb.js
+      - name: Run hub-collections.js
+        env:
+          SUPABASE_URL: ${{ secrets.HUB_SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.HUB_SUPABASE_KEY }}
+          TMDB_KEY: ${{ secrets.HUB_TMDB_KEY }}
+        run: node scripts/hub-collections.js
