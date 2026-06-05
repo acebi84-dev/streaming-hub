@@ -6,7 +6,9 @@
   "scripts": {
     "fetch": "node scripts/hub-fetch.js",
     "tmdb": "node scripts/hub-tmdb.js",
-    "imdb": "node scripts/hub-imdb.js"
+    "imdb": "node scripts/hub-imdb.js",
+    "popular": "node scripts/hub-popular.js",
+    "collections": "node scripts/hub-collections.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.39.0",

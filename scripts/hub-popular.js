@@ -6,19 +6,20 @@ const RAPIDAPI_KEY = process.env.RAPIDAPI_KEY || process.env.HUB_RAPIDAPI_KEY;
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
+// slug: DB'de saklanan değer, catalog: RapidAPI katalog ID'si
 const PLATFORMS = [
-  { slug: 'amazon', rapidId: 'prime' },
-  { slug: 'netflix', rapidId: 'netflix' },
-  { slug: 'disney', rapidId: 'disney' },
-  { slug: 'hbo', rapidId: 'hbo' },
+  { slug: 'netflix', catalog: 'netflix' },
+  { slug: 'amazon',  catalog: 'prime'   },
+  { slug: 'disney',  catalog: 'disney'  },
+  { slug: 'hbo',     catalog: 'hbo'     },
 ];
 
 const SHOW_TYPES = ['movie', 'series'];
 
-async function fetchPopular(rapidId, showType) {
+async function fetchPopular(platform, showType) {
   const params = new URLSearchParams({
     country: 'tr',
-    catalogs: rapidId,
+    catalogs: platform.catalog,
     order_by: 'popularity_1week',
     order_direction: 'desc',
     show_type: showType,
@@ -34,7 +35,7 @@ async function fetchPopular(rapidId, showType) {
   });
 
   if (!res.ok) {
-    console.error(`Error fetching ${rapidId}/${showType}:`, res.status, await res.text());
+    console.error(`Error fetching ${platform.slug}/${showType}:`, res.status, await res.text());
     return [];
   }
 
@@ -45,6 +46,7 @@ async function fetchPopular(rapidId, showType) {
 async function run() {
   console.log('Fetching popular shows for all platforms...');
 
+  // Clear existing data
   const { error: deleteError } = await supabase.from('hub_popular').delete().neq('id', 0);
   if (deleteError) {
     console.error('Delete error:', deleteError);
@@ -54,12 +56,12 @@ async function run() {
   for (const platform of PLATFORMS) {
     for (const showType of SHOW_TYPES) {
       console.log(`Fetching ${platform.slug} / ${showType}...`);
-      const shows = await fetchPopular(platform.rapidId, showType);
+      const shows = await fetchPopular(platform, showType);
       console.log(`  Got ${shows.length} shows`);
 
       const rows = shows.slice(0, 50).map((show, index) => {
         const trOptions = show.streamingOptions?.tr || [];
-        const platformOption = trOptions.find(o => o.service.id === platform.rapidId);
+        const platformOption = trOptions.find(o => o.service.id === platform.catalog);
 
         return {
           platform: platform.slug,

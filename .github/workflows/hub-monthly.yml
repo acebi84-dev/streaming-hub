@@ -32,9 +32,14 @@ jobs:
           SUPABASE_URL: ${{ secrets.HUB_SUPABASE_URL }}
           SUPABASE_KEY: ${{ secrets.HUB_SUPABASE_KEY }}
         run: node scripts/hub-imdb.js
+      - name: Run hub-popular.js
+        env:
+          SUPABASE_URL: ${{ secrets.HUB_SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.HUB_SUPABASE_KEY }}
+          RAPIDAPI_KEY: ${{ secrets.HUB_RAPIDAPI_KEY }}
+        run: node scripts/hub-popular.js
       - name: Run hub-collections.js
         env:
           SUPABASE_URL: ${{ secrets.HUB_SUPABASE_URL }}
           SUPABASE_KEY: ${{ secrets.HUB_SUPABASE_KEY }}
-          TMDB_KEY: ${{ secrets.HUB_TMDB_KEY }}
         run: node scripts/hub-collections.js

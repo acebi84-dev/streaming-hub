@@ -65,6 +65,7 @@ function mapShow(show) {
     type: show.showType === 'movie' ? 'movie' : 'series',
     year: show.releaseYear || null,
     imdb_id: show.imdbId || null,
+    imdb_score: null,
     original_title: show.originalTitle || show.title || null,
     original_language: show.originalLanguage || null,
     poster_url: show.imageSet?.verticalPoster?.w480 || show.imageSet?.horizontalPoster?.w480 || null,
@@ -80,8 +81,6 @@ function getStreamingUrl(show, platformSlug) {
   const match = options.find(o => o.service?.id === serviceId);
   return match?.link || null;
 }
-
-
 
 async function processBatch(items, platform) {
   const BATCH_SIZE = 100;

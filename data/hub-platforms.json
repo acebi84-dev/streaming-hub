@@ -1,26 +1,6 @@
 [
-  {
-    "slug": "netflix",
-    "name": "Netflix",
-    "color": "#E50914",
-    "rapidapi_id": "netflix"
-  },
-  {
-    "slug": "amazon",
-    "name": "Amazon Prime",
-    "color": "#00A8E1",
-    "rapidapi_id": "prime"
-  },
-  {
-    "slug": "disney",
-    "name": "Disney+",
-    "color": "#113CCF",
-    "rapidapi_id": "disney"
-  },
-  {
-    "slug": "hbo",
-    "name": "HBO Max",
-    "color": "#5822B4",
-    "rapidapi_id": "hbo"
-  }
+  { "slug": "netflix", "name": "Netflix",      "color": "#E50914", "catalog": "netflix" },
+  { "slug": "amazon",  "name": "Amazon Prime", "color": "#00A8E1", "catalog": "prime"   },
+  { "slug": "disney",  "name": "Disney+",      "color": "#01137c", "catalog": "disney"  },
+  { "slug": "hbo",     "name": "HBO Max",      "color": "#000000", "catalog": "hbo"     }
 ]
