@@ -82,6 +82,15 @@ function getStreamingUrl(show, platformSlug) {
   return match?.link || null;
 }
 
+function getStreamingDate(show, platformSlug) {
+  const serviceId = platformSlug === 'amazon' ? 'prime' : platformSlug;
+  const options = show.streamingOptions?.tr || [];
+  const match = options.find(o => o.service?.id === serviceId);
+  return match?.availableSince
+    ? new Date(match.availableSince * 1000).toISOString().split('T')[0]
+    : null;
+}
+
 async function processBatch(items, platform, existingDates = {}) {
   const BATCH_SIZE = 100;
 
@@ -111,7 +120,7 @@ async function processBatch(items, platform, existingDates = {}) {
 
   const today = new Date().toISOString().split('T')[0];
 
-  // Prepare availability data — mevcut available_since tarihi varsa koru, yoksa bugünü yaz
+  // Prepare availability data — önce API tarihi, yoksa DB'deki mevcut tarih, yoksa bugün
   const availabilities = uniqueItems
     .map(show => {
       const contentId = contentIdMap[show.imdbId];
@@ -120,7 +129,7 @@ async function processBatch(items, platform, existingDates = {}) {
         content_id: contentId,
         platform_slug: platform.slug,
         platform_url: getStreamingUrl(show, platform.slug),
-        available_since: existingDates[contentId] || today,
+        available_since: getStreamingDate(show, platform.slug) || existingDates[contentId] || today,
       };
     })
     .filter(Boolean);
