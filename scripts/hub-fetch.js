@@ -82,7 +82,7 @@ function getStreamingUrl(show, platformSlug) {
   return match?.link || null;
 }
 
-async function processBatch(items, platform) {
+async function processBatch(items, platform, existingDates = {}) {
   const BATCH_SIZE = 100;
 
   // Prepare all content data
@@ -109,7 +109,9 @@ async function processBatch(items, platform) {
     console.log(`  ${platform.slug}: ${Math.min(i + BATCH_SIZE, showsData.length)}/${showsData.length} içerik yazıldı`);
   }
 
-  // Prepare availability data
+  const today = new Date().toISOString().split('T')[0];
+
+  // Prepare availability data — mevcut available_since tarihi varsa koru, yoksa bugünü yaz
   const availabilities = uniqueItems
     .map(show => {
       const contentId = contentIdMap[show.imdbId];
@@ -118,7 +120,7 @@ async function processBatch(items, platform) {
         content_id: contentId,
         platform_slug: platform.slug,
         platform_url: getStreamingUrl(show, platform.slug),
-        available_since: new Date().toISOString().split('T')[0],
+        available_since: existingDates[contentId] || today,
       };
     })
     .filter(Boolean);
@@ -148,10 +150,21 @@ async function run() {
     try {
       const items = await fetchPlatformCatalog(platform);
       console.log(`[${platform.slug}] toplam ${items.length} içerik bulundu`);
+
+      // Silmeden önce mevcut available_since tarihlerini kaydet
+      const { data: existing } = await supabase
+        .from('hub_availability')
+        .select('content_id, available_since')
+        .eq('platform_slug', platform.slug);
+      const existingDates = {};
+      (existing || []).forEach(r => { existingDates[r.content_id] = r.available_since; });
+      console.log(`[${platform.slug}] ${Object.keys(existingDates).length} mevcut tarih kaydedildi`);
+
       const { error: deleteError } = await supabase.from('hub_availability').delete().eq('platform_slug', platform.slug);
       if (deleteError) console.error(`Delete error for ${platform.slug}:`, deleteError.message);
       else console.log(`[${platform.slug}] eski availability silindi`);
-      await processBatch(items, platform);
+
+      await processBatch(items, platform, existingDates);
       console.log(`[${platform.slug}] tamamlandı`);
     } catch (err) {
       console.error(`[${platform.slug}] hata:`, err.message);
