@@ -65,7 +65,7 @@ function mapShow(show) {
     type: show.showType === 'movie' ? 'movie' : 'series',
     year: show.releaseYear || null,
     imdb_id: show.imdbId || null,
-    imdb_score: null,
+    imdb_score: show.rating ? show.rating / 10 : null,
     original_title: show.originalTitle || show.title || null,
     original_language: show.originalLanguage || null,
     poster_url: show.imageSet?.verticalPoster?.w480 || show.imageSet?.horizontalPoster?.w480 || null,
