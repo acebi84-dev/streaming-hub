@@ -8,10 +8,12 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // slug: DB'de saklanan değer, catalog: RapidAPI katalog ID'si
 const PLATFORMS = [
-  { slug: 'netflix', catalog: 'netflix' },
-  { slug: 'amazon',  catalog: 'prime'   },
-  { slug: 'disney',  catalog: 'disney'  },
-  { slug: 'hbo',     catalog: 'hbo'     },
+  { slug: 'netflix',     catalog: 'netflix'     },
+  { slug: 'amazon',      catalog: 'prime'       },
+  { slug: 'disney',      catalog: 'disney'      },
+  { slug: 'hbo',         catalog: 'hbo'         },
+  { slug: 'mubi',        catalog: 'mubi'        },
+  { slug: 'crunchyroll', catalog: 'crunchyroll' },
 ];
 
 const SHOW_TYPES = ['movie', 'series'];

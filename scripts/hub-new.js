@@ -7,10 +7,12 @@ const RAPIDAPI_KEY = process.env.RAPIDAPI_KEY;
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const PLATFORMS = [
-  { slug: 'netflix', catalog: 'netflix' },
-  { slug: 'amazon',  catalog: 'prime'   },
-  { slug: 'disney',  catalog: 'disney'  },
-  { slug: 'hbo',     catalog: 'hbo'     },
+  { slug: 'netflix',     catalog: 'netflix'     },
+  { slug: 'amazon',      catalog: 'prime'       },
+  { slug: 'disney',      catalog: 'disney'      },
+  { slug: 'hbo',         catalog: 'hbo'         },
+  { slug: 'mubi',        catalog: 'mubi'        },
+  { slug: 'crunchyroll', catalog: 'crunchyroll' },
 ];
 
 // Get Unix timestamp for 48 hours ago (buffer for timezone differences)
