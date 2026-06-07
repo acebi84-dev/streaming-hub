@@ -1,0 +1,22 @@
+name: Hub Push - Yeni İçerik
+on:
+  schedule:
+    - cron: '0 16 * * *'   # 16:00 UTC = 19:00 TR (akşam karar saati)
+  workflow_dispatch:
+jobs:
+  push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install dependencies
+        run: npm install
+      - name: Run hub-push-new.js
+        env:
+          SUPABASE_URL: ${{ secrets.HUB_SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.HUB_SUPABASE_SERVICE_KEY }}
+        run: node scripts/hub-push-new.js
