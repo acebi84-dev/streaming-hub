@@ -40,4 +40,8 @@ Kapsam (v1, iki bildirim):
 - **C) DB:** `push_tokens` (RLS sadece sahibine) — SQL çalıştırıldı.
 - **D) App.js:** `expo-notifications` + izin akışı (ilk takip / ilk NewScreen; ilk açılışta değil; red kalıcı) + token upsert/çıkışta sil + tıklama yönlendirmesi (follow→profil, new→NewScreen). **KOD YAZILDI, OTA GÖNDERİLMEDİ — production build ile aktifleşecek** (IAP/Sentry ile birlikte). Tüm çağrılar lazy-require + try/catch guard'lı.
 
-**Açık iş / not:** `HUB_SUPABASE_KEY` service role mu doğrulanamadı (GitHub secret okunamaz) → workflow `HUB_SUPABASE_SERVICE_KEY` secret'ı bekliyor. Haftalık sosyal özet KALDIRILDI; **ağ canlanınca "aylık sosyal özet"** bildirimi eklenebilir (ileri iş).
+**Açık iş / not:**
+- `HUB_SUPABASE_KEY` service role mu doğrulanamadı (GitHub secret okunamaz) → workflow `HUB_SUPABASE_SERVICE_KEY` secret'ı bekliyor.
+- **v1 sadece iOS push.** Android push **ileri iş**: `android.googleServicesFile` (google-services.json) eklenip EAS'e **FCM V1** credentials yüklenecek; sonra Android build'e dahil edilecek.
+- Haftalık sosyal özet KALDIRILDI; **ağ canlanınca "aylık sosyal özet"** bildirimi eklenebilir (ileri iş).
+- Production build runtime **1.1.0**, channel **"production"**; build sonrası production OTA SADECE açık onayla (`eas update --branch production`).
