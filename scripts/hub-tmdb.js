@@ -67,7 +67,7 @@ async function enrichContent(content) {
   const year = detailEn.release_date?.slice(0,4) ? parseInt(detailEn.release_date.slice(0,4)) : (detailEn.first_air_date?.slice(0,4) ? parseInt(detailEn.first_air_date.slice(0,4)) : null);
 
   // Similar content TMDB IDs
-  const similarRes = await tmdbFetch(`/${type}/${item.id}/similar?page=1`);
+  const similarRes = await tmdbFetch(`/${type}/${item.id}/recommendations?page=1`);
   const similarIds = (similarRes?.results || []).slice(0, 15).map(s => s.id).filter(Boolean);
 
   return {
